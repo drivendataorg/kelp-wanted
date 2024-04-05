@@ -1,0 +1,66 @@
+$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
+type: pipeline
+description: Hyperparameter search for model encoder and architecture
+experiment_name: model-hparam-search
+
+settings:
+  default_compute: azureml:gpu-4c-28g-t4-nc4ast4v3-spot
+  default_datastore: azureml:workspaceblobstore
+
+jobs:
+  sweep_step:
+    type: sweep
+
+    resources:
+      shm_size: "12g"
+
+    inputs:
+      data_dir:
+        type: uri_folder
+        mode: download
+        path: azureml:train_dataset@latest
+      metadata_file:
+        type: uri_file
+        mode: download
+        path: azureml:metadata_file@latest
+      dataset_stats_file:
+        type: uri_file
+        mode: download
+        path: azureml:dataset_stats_file:2
+
+    outputs:
+      output_dir:
+
+    sampling_algorithm: random
+
+    trial: file:../components/train_model.yaml
+
+    search_space:
+      loss:
+        type: choice
+        values:
+          - ce
+          - jaccard
+          - dice
+          - tversky
+          - focal
+          - lovasz
+          - soft_ce
+          - xedice
+          - focal_tversky
+          - log_cosh_dice
+          - t_loss
+          - combo
+          - exp_log_loss
+          - soft_dice
+          - batch_soft_dice
+
+    objective:
+      goal: maximize
+      primary_metric: hp_metric
+
+    limits:
+      max_total_trials: 1000
+      max_concurrent_trials: 50
+      trial_timeout: 3600  # 1 hour
+      timeout: 259200  # 3 days

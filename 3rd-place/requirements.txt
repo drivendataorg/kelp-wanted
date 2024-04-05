@@ -1,0 +1,17 @@
+albumentations
+fastprogress
+h5py
+imagecodecs
+joblib
+jupyter
+matplotlib
+numpy
+opencv-python
+pandas
+scikit-image
+scikit-learn
+segmentation_models_pytorch
+tqdm
+tifffile
+transformers
+
